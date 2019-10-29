@@ -1,0 +1,150 @@
+Para gestionar las versines, git realiza un Snapshoot de todos los ficheros y lo almacena como un pequeño filesystem. De este modo cuando se desea recuperar la información de una version se recuperan todos los ficheros, por otra parte, si un fichero no ha cambiado, crea un puntero a dicho fichero de la snapshoot anterior.
+Toda la informacion de git se encuentra en el directorio .git , de aqui puede recuperar versiones anteriores realizando diversos calculos en lugar de tener que pedirselas a un servidor remoto.
+Los ficheros pueden estar en 3 estados distintos:
+- Modified: el fichero ha sido modificado y no coincide con el que se encuentra en el repositorio local.
+- Staged: el fichero ha sido marcado para subirlo al repositorio local en el proximo commit.
+- Commited: el fichero se encuentra tal cual esta en el repositorio local.
+- Untracked: el fichero es nuevo y git no conocía de su existencia hasta ahora.
+
+La forma de trabajar con git es:
+1- se modifican los ficheros en local.
+2- se marcan aquellos ficheros que queramos commitear
+3- se hace un commit para actualizar el repositorio local.
+
+Para instalar git: apt install git-all
+
+La primera vez que accedamos a la consola de git deberemos hacer:
+git config --global user.name "John Doe"
+git config --global user.email johndoe@example.com
+--global -> si queremos utilizar esta informacion en todo el sistema (todos los proyectos)
+
+Esta informacion la utiliza git para poder identificar quien hace cada commit, cada push, cada pull, etc.
+
+Existen dos formas de empezar un repositorio con Git: La primera consiste en coger un directorio local que no esta bajo control de versiones y convertirlo en un repositorio Git, la segunda consiste en clonar un directorio ya existente en nuestro repositorio local.
+1) Inicializar un repositorio a partir de un directorio exstente:
+	- Nos movemos a la carpeta en cuestión
+	- Ejecutamos: git init (esto crea el repositorio local .git con los ficheros necesarios)
+	- Ejecutamos: git add <fichero> (con esto marcamos como staged los fichero)
+	- Ejecutamos: git commit -m <mensaje> (manda los ficheros marcados como staged al repositorio local)
+
+2) Clonar un repositorio remoto con toda la informacion de git (versiones, cambios, etc):
+	- Ejecutamos: git clone <url>
+	- Esto crea un directorio nuevo con todos los elementos dentro.
+
+Si queremos evitar que git pregunte por algunos ficheros, podemos crear un fichero ".gitignore" y poner los patrones de ficheros que queremos que evite checkear.
+
+Si la rama actual esta configurada para seguir a una rama alojada en un directorio remoto, se puede usar el comando "pull" para realizar un "fetch" (sincronizar las ramas locales con las remotas) y un "merge" (unir las ramas locales con las remotas para actualizar el directorio local) a la vez.
+Esto es bastante mas cómodo y el comando "git clone" se encarga de configurar la rama master local para que siga a la rama master externa.
+
+AL crear una nueva rama creamos un nuevo puntero a la última snapshoot, de este modo, al hacer un "commit" se crea un snapshoot SOLO para la nueva rama (su puntero señala a la nueva snapshoot). Si nos volvemos a cambiar a la master y buscamos, veremos que el commit no aparece y los ficheros han vuelto a como estaban antes (ya que el commit se hizo solo en la segunda rama).
+Si modificamos la misma parte de un fichero en dos ramas distintas y despues las intentamos unir, git dara un error de conflicto y deberemos resolver el conflicto antes de continuar.
+Al eliminar una rama mejor hacerlo mientras estamos situados en la master para evitar problemas.
+Si hacemos el traking de una rama local con otra remota, cada vez que hagamos pull git lo subirá al repositorio externo y a la rama externa. Esto nos permite tener ramas locales y ramas externas vinculadas.
+
+
+Comandos:
+
+
+Básicos:
+
+Comprobar la configuración de git:
+git config --list
+
+Ayuda:
+git help <palabra>
+git <palabra> -h
+
+Clonar un repositorio remoto existente:
+git clone <url>
+
+Marcar los ficheros modified o untracked como staged:
+git add <fichero>
+
+Enviar los ficheros marcados como staged al repositorio local (commited):
+git commit -m <mensaje>
+-a -> realiza también el comando "add" de todos los ficheros modified
+--amend -> sobreescribe el ultimo commit que hayamos hecho
+
+Ver el estado de los ficheros:
+git status
+
+Ver los cambios realizados sobre los ficheros que estan no staged:
+git diff
+
+Borrar un fichero (el cambio va al staged area):
+git rm <fichero>
+
+Renombrar un fichero (el cambio va al staged area):
+git mv <origen> <destino>
+
+Para ver el historial de commits:
+git log
+-p -> para ver los cambios que se hicieron en cada commit
+
+Para deshacer lo que hizo un commit:
+git revert <primeros nº del id del commit>
+*cuidado* esto genera un nuevo commit
+
+Para quitar un fichero del staged area:
+git reset HEAD <fichero>
+
+Para deshacer los cambios realizados a un fichero:
+git checkout -- <fichero>
+
+
+
+Repositorio externo:
+
+Ver los repositorios externos:
+git remote -v
+
+Añadir un repositorio externo:
+git remote add <aliasDelRepositorio> <url>
+
+Ver información de un repositorio externo:
+git remote show <aliasDelRepositorio>
+
+Cambiar el alias asignado a un repositorio externo:
+git remote rename <antiguoAlias> <nuevoAlias>
+
+Descargar el repositorio externo:
+git pull (desde la rama master)
+
+Subir el repositorio local al repositorio externo:
+git push <aliasDelRepositorio> <rama a la que subirlo>
+
+Quitar un repositorio externo del sistema:
+git remote remove <aliasDelRepositorio>
+
+Para crear alias que sustituyan a comandos:
+git config --global alias.<palabra> '<comando a realizar>'
+
+
+
+Branch:
+
+Crear una nueva rama saliente de master:
+git branch <nombre de la rama>
+
+Cambiar de rama:
+git checkout <nombre de la rama>
+-b -> crea la rama (de la master) a la vez que se realiza el cambio 
+
+Crear una nueva rama saliente de otra rama:
+git checkout -b <nombre de la rama> <rama padre>
+
+Unir la rama actual con otra más actualizada:
+git merge <nombre de la rama>
+
+Borrar una rama:
+git branch -d <nombre de la rama>
+
+Ver ramas existentes:
+git branch
+-v -> ver el ultimo commit de cada rama
+
+Hacer tracking entre una nueva rama local y otra remota:
+git checkout -b <nombre de la rama> <server/rama remota>
+
+Hacer tracking entre una rama local existente y otra remota:
+git branch -u <server/rama remota>
